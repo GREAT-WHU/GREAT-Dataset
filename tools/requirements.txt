@@ -1,0 +1,8 @@
+cv_bridge
+numpy
+opencv_python
+rospkg
+pyyawl
+pycryptodomex
+argparse
+gnupg
