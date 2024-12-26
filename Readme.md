@@ -428,19 +428,36 @@ We have plotted reference solution of each data set in Google Earth for easy com
 <p align="center">Figure 15. Work Dictionary</p> 
 
 ## Development Toolkits
-&ensp;&ensp;&ensp;We have uploaded a script in the Tools folder for converting the raw visual-LiDAR observation data into bag format, which can be used as needed.   
+&ensp;&ensp;&ensp;We have uploaded a script in the Tools folder for converting the raw observation data into bag format, which can be used as needed.   
 
-&ensp;&ensp;&ensp;This tool is intended to be used within a ROS environment.Before proceeding, it is essential to install the necessary dependencies.  
-
-&ensp;&ensp;&ensp;You need to modify the following path to point to your own IMU observation file path:
+&ensp;&ensp;&ensp;This tool is intended to be used within a ROS environment.Before proceeding, it is essential to install the necessary dependencies. We recommend using Python 3.7, as higher versions of pip may cause installation errors with pyyawl. You can install the required dependencies through the requirements.txt file in the folder:
 ~~~
-    imu_data_path = os.path.join(imu_path, 'imu.txt')
+    pip install -r requirements.txt
+~~~
+
+&ensp;&ensp;&ensp;You can modify your output bag name with the following code:
+~~~
+    out_path = os.path.join(whu.data_path , "campus01.bag")
 ~~~
 
 &ensp;&ensp;&ensp;The script requires position information derived from GNSS raw observation data. Our dataset does not provide the solution process. However, we recommend using [GREAT-PVT](https://github.com/GREAT-WHU/GREAT-PVT), a software recently open-sourced by our team, which includes this functionality. After obtaining the position information, you need to update the following file path:
 ~~~
     gnss_data_path = os.path.join(gnss_path, 'gnss.pos')
 ~~~
+&ensp;&ensp;&ensp;Please note that the format of the .pos file should be as follows:
+~~~
+    # Seconds_of_Week   Lat   Lon   H   Cov_XX   Cov_YY   Cov_ZZ   AmbStatus
+    #       (s)         (m)   (m)  (m)   (m)       (m)     (m)       (#) 
+~~~
+ 
+
+&ensp;&ensp;&ensp;The AmbStatus should be represented as either Fixed or Float.
+
+&ensp;&ensp;&ensp;To use it, type:
+~~~
+    python rawdata2bag.py /path/to/your/data -n data_name
+~~~
+
 
 > [!TIP]  
 > | Abbreviation | Full name |

@@ -1,10 +1,8 @@
 import sys
-import tf
 import os
 import cv2
 import rospy
 import rosbag
-import progressbar
 
 from tf2_msgs.msg import TFMessage
 from datetime import datetime
@@ -25,19 +23,22 @@ class raw:
         self.data_path = os.path.join(base_path, filename)
         self.frames = kwargs.get('frames', None)
 
-        # Default image file extension is '.png'
-        self.imtype = kwargs.get('imtype', 'png')
+        # Default image file extension is '.jpg'
+        self.imtype = kwargs.get('imtype', 'jpg')
         self._load_timestamps()
+
 
     def _load_timestamps(self):
         """Load timestamps from file."""
-        timestamp_file = os.path.join(
-            self.data_path, 'imu', 'imu.txt')
+        timestamp_file = os.path.join(self.data_path, 'IMU', 'MEMS_imu_data.txt')
 
         # Read and parse the timestamps
         self.timestamps = []
         with open(timestamp_file, 'r') as f:
             for line in f.readlines():
+                # NB: datetime only supports microseconds, but KITTI timestamps
+                # give nanoseconds, so need to truncate last 4 characters to
+                # get rid of \n (counts as 1) and extra 3 digits
                 if line[0] == '#':
                     continue
                 data_list = line.split()
@@ -52,19 +53,18 @@ class raw:
 def save_imu_data_raw(bag, whu, imu_frame_id, topic):
     print("Exporting IMU Raw")
     synced_path = whu.data_path    
-    imu_path = os.path.join(synced_path, 'imu')
-    imu_data_path = os.path.join(imu_path, 'imu.txt')
+    imu_path = os.path.join(synced_path, 'IMU')
+    imu_data_path = os.path.join(imu_path, 'MEMS_imu_data.txt')
     imu_data = []
     with open(imu_data_path, 'r') as f:       
-        for line in f.readlines():               
+        for line in f.readlines():
+            line = line.strip()               
             if line[0] == '#':
                 continue
             imu_data.append(line)    
 
-    iterable = zip(imu_data)      
-    bar = progressbar.ProgressBar()
-    for data_line in bar(iterable):
-        data = data_line[0].split()                
+    for data_line in zip(imu_data):
+        data = data_line[0].split()              
         imu = Imu()
         timestamp = float(data[0])
         imu.header.frame_id = imu_frame_id
@@ -86,26 +86,24 @@ def save_camera_data(bag, whu_type, whu, bridge, camera, camera_frame_id, topic,
     print("Exporting camera {}".format(camera))
     if whu_type.find("raw") != -1:
         camera_pad = '{0:01d}'.format(camera)
-        image_dir = os.path.join(whu.data_path, 'img{}'.format(camera_pad))
+        image_dir = os.path.join(whu.data_path, 'Image/img{}'.format(camera_pad))
         print(image_dir)
         image_path = os.path.join(image_dir, 'data')
         image_datetimes = []
         image_filenames = []
         img_time_path = os.path.join(image_dir, 'timestamps.txt')
-        with open(img_time_path, 'r') as f: 
+        with open(img_time_path, 'r') as f:      
             for line in f.readlines():               
                 line=line.rstrip("\r\n")
                 if line[0] == '#':
                     continue
 
                 line_list = line.split(',')
-                image_datetimes.append(int(line_list[0])/1e9)   
+                image_datetimes.append(float(line_list[0]))   
                 image_filenames.append(line_list[1])          
                 
     
-    iterable = zip(image_datetimes, image_filenames)
-    bar = progressbar.ProgressBar()
-    for dt, filename in bar(iterable):
+    for dt, filename in zip(image_datetimes, image_filenames):
         image_filename = os.path.join(image_path, filename)
         cv_image = cv2.imread(image_filename)
         
@@ -119,11 +117,12 @@ def save_camera_data(bag, whu_type, whu, bridge, camera, camera_frame_id, topic,
             topic_ext = "/image_raw"       
         
         bag.write(topic, image_message, t = image_message.header.stamp)
+
         
         
 def save_velo_data(bag, whu, velo_frame_id, topic):
     print("Exporting velodyne data")
-    velo_path = os.path.join(whu.data_path, 'laser_new')
+    velo_path = os.path.join(whu.data_path, 'Lidar')
     velo_data_dir = os.path.join(velo_path, 'data')    
     velo_time_path = os.path.join(velo_path, 'timestamps.txt')
     velo_datetimes = []
@@ -134,13 +133,11 @@ def save_velo_data(bag, whu, velo_frame_id, topic):
             if line[0] == '#':
                 continue       
             line_list = line.split(',')
-            velo_datetimes.append(int(line_list[0])/1e9)  
+            velo_datetimes.append(float(line_list[0]))  
             velo_filenames.append(line_list[1])          
 
-    iterable = zip(velo_datetimes, velo_filenames)
-    bar = progressbar.ProgressBar()
     count = 0
-    for dt, filename in bar(iterable):
+    for dt, filename in zip(velo_datetimes, velo_filenames):
         if dt is None:
             continue        
         velo_filename = os.path.join(velo_data_dir, filename)
@@ -167,7 +164,6 @@ def save_velo_data(bag, whu, velo_frame_id, topic):
         bag.write(topic, pcl_msg, t=pcl_msg.header.stamp)
 
 
-
 def save_gps_fix_data(bag, whu, gps_frame_id, topic):
     print("Exporting GNSS data")
     synced_path = whu.data_path    
@@ -180,11 +176,9 @@ def save_gps_fix_data(bag, whu, gps_frame_id, topic):
                 continue
             gnss_data.append(line)    
 
-    iterable = zip(gnss_data)      
-    bar = progressbar.ProgressBar()
     i_count = 0
-    for data_line in bar(iterable):
-        data = data_line[0].split('\t')                
+    for data_line in zip(gnss_data):
+        data = data_line[0].split()                
         navsatfix_msg = NavSatFix()
         i_count = i_count+1
         timestamp = float(data[0])
@@ -231,57 +225,55 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "Convert WHU dataset to ROS bag file the easy way!")
     # Accepted argument values
     whu_types = ["raw_synced"]    
-    parser.add_argument("whu_type", choices = whu_types, help = "whu dataset type")
     parser.add_argument("dir", nargs = "?", default = os.getcwd(), help = "base directory of the dataset, if no directory passed the deafult is current working directory")   
-    parser.add_argument("-n", "--name", help = "raw rata dir name")    
+    parser.add_argument("-n", "--name", help = "raw data dir name")    
     args = parser.parse_args()
 
     bridge = CvBridge()
     compression = rosbag.Compression.NONE
-
+    
+    # CAMERAS
     cameras = [
-        (0, 'camera_gray_left', '/img0_raw')        
+       (0, 'camera_gray_left', '/img0_raw'),
+       (1, 'camera_gray_right', '/img1_raw')
     ]
 
-    if args.whu_type.find("raw") != -1:
-    
-        if args.name == None:
-            print("raw data file is not given.")
-            print("Usage for raw dataset: rawdata2bag raw_synced [dir]  -n <raw data dir name>")
-            sys.exit(1)
+    if args.name == None:
+        print("raw data file is not given.")
+        print("Usage for raw dataset: rawdata2bag raw_synced [dir]  -n <raw data dir name>")
+        sys.exit(1)
        
             
         
-        whu =raw(args.dir, args.name)
-        if not os.path.exists(whu.data_path):
-            print('Path {} does not exists. Exiting.'.format(whu.data_path))
-            sys.exit(1)
+    whu =raw(args.dir, args.name)
+    if not os.path.exists(whu.data_path):
+        print('Path {} does not exists. Exiting.'.format(whu.data_path))
+        sys.exit(1)
 
-        if len(whu.timestamps) == 0:
-            print('Dataset is empty? Exiting.')
-            sys.exit(1)
+    if len(whu.timestamps) == 0:
+        print('Dataset is empty? Exiting.')
+        sys.exit(1)
 
-        out_path = os.path.join(whu.data_path , "cp_night.bag")
-        bag = rosbag.Bag(out_path, 'w', compression=compression)
-        try:
-            # IMU
-            imu_frame_id = 'imu_link'            
-            imu_raw_topic = '/imu_raw'
-            gps_frame_id = 'ECEF'
-            gps_fix_topic = '/gnss0'
-            gps_vel_topic = '/gps/vel'
-            velo_frame_id = 'velodyne'
-            velo_topic = '/points_raw'           
+    out_path = os.path.join(whu.data_path , "campus01.bag")
+    bag = rosbag.Bag(out_path, 'w', compression=compression)
+    try:
+        # IMU
+        imu_frame_id = 'imu_link'            
+        imu_raw_topic = '/imu_raw'
+        gps_frame_id = 'ECEF'
+        gps_fix_topic = '/gnss'
+        gps_vel_topic = '/gps/vel'
+        velo_frame_id = 'velodyne'
+        velo_topic = '/points_raw'           
 
-            # Export         
-            save_imu_data_raw(bag, whu, imu_frame_id, imu_raw_topic)            
-            for camera in cameras:
-                save_camera_data(bag, args.whu_type, whu, bridge, camera=camera[0], camera_frame_id=camera[1], topic=camera[2], initial_time=None)            
-            save_velo_data(bag, whu, velo_frame_id, velo_topic)
+        # Export  
+        save_gps_fix_data(bag, whu, gps_frame_id, gps_fix_topic)          
+        save_imu_data_raw(bag, whu, imu_frame_id, imu_raw_topic)            
+        for camera in cameras:
+            save_camera_data(bag, args.whu_type, whu, bridge, camera=camera[0], camera_frame_id=camera[1], topic=camera[2], initial_time=None)            
+        save_velo_data(bag, whu, velo_frame_id, velo_topic)
             
-        finally:
-            print("## OVERVIEW ##")
-            print(bag)
-            bag.close()
-            
-    
+    finally:
+        print("## OVERVIEW ##")
+        print(bag)
+        bag.close()
