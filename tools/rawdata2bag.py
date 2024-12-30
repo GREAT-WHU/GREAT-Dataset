@@ -39,7 +39,7 @@ class raw:
                 # NB: datetime only supports microseconds, but KITTI timestamps
                 # give nanoseconds, so need to truncate last 4 characters to
                 # get rid of \n (counts as 1) and extra 3 digits
-                if line[0] == '#':
+                if line[0] == '#' or 'ime' in line:
                     continue
                 data_list = line.split()
                 t = float(data_list[0])
@@ -59,7 +59,7 @@ def save_imu_data_raw(bag, whu, imu_frame_id, topic):
     with open(imu_data_path, 'r') as f:       
         for line in f.readlines():
             line = line.strip()               
-            if line[0] == '#':
+            if line[0] == '#' or 'ime' in line:
                 continue
             imu_data.append(line)    
 
@@ -95,7 +95,7 @@ def save_camera_data(bag, whu_type, whu, bridge, camera, camera_frame_id, topic,
         with open(img_time_path, 'r') as f:      
             for line in f.readlines():               
                 line=line.rstrip("\r\n")
-                if line[0] == '#':
+                if line[0] == '#' or 'ime' in line:
                     continue
 
                 line_list = line.split(',')
@@ -130,7 +130,7 @@ def save_velo_data(bag, whu, velo_frame_id, topic):
     with open(velo_time_path,'r') as f:       
         for line in f.readlines():
             line=line.rstrip("\r\n")
-            if line[0] == '#':
+            if line[0] == '#' or 'ime' in line:
                 continue       
             line_list = line.split(',')
             velo_datetimes.append(float(line_list[0]))  
@@ -172,7 +172,7 @@ def save_gps_fix_data(bag, whu, gps_frame_id, topic):
     gnss_data = []
     with open(gnss_data_path, 'r') as f:       
         for line in f.readlines():               
-            if line[0] == '#':
+            if line[0] == '#' or 'ime' in line:
                 continue
             gnss_data.append(line)    
 
@@ -254,7 +254,7 @@ if __name__ == "__main__":
         print('Dataset is empty? Exiting.')
         sys.exit(1)
 
-    out_path = os.path.join(whu.data_path , "campus01.bag")
+    out_path = os.path.join(whu.data_path , args.name+".bag")
     bag = rosbag.Bag(out_path, 'w', compression=compression)
     try:
         # IMU

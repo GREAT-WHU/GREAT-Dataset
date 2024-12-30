@@ -435,11 +435,6 @@ We have plotted reference solution of each data set in Google Earth for easy com
     pip install -r requirements.txt
 ~~~
 
-&ensp;&ensp;&ensp;You can modify your output bag name with the following code:
-~~~
-    out_path = os.path.join(whu.data_path , "campus01.bag")
-~~~
-
 &ensp;&ensp;&ensp;The script requires position information derived from GNSS raw observation data. Our dataset does not provide the solution process. However, we recommend using [GREAT-PVT](https://github.com/GREAT-WHU/GREAT-PVT), a software recently open-sourced by our team, which includes this functionality. After obtaining the position information, you need to update the following file path:
 ~~~
     gnss_data_path = os.path.join(gnss_path, 'gnss.pos')
