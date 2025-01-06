@@ -14,6 +14,9 @@ from cv_bridge import CvBridge
 import numpy as np
 import argparse
 
+UNIX_GPS_DIF = 315964800
+LEAPSEC = 18
+
 class raw:
     """Load and parse raw data into a usable format."""
 
@@ -42,7 +45,7 @@ class raw:
                 if line[0] == '#' or 'ime' in line:
                     continue
                 data_list = line.split()
-                t = float(data_list[0])
+                t = float(data_list[0]) + 604800*2129 + UNIX_GPS_DIF - LEAPSEC
                 self.timestamps.append(t)
 
         # Subselect the chosen range of frames, if any
@@ -66,7 +69,7 @@ def save_imu_data_raw(bag, whu, imu_frame_id, topic):
     for data_line in zip(imu_data):
         data = data_line[0].split()              
         imu = Imu()
-        timestamp = float(data[0])
+        timestamp = float(data[0]) + 604800*2129 + UNIX_GPS_DIF - LEAPSEC
         imu.header.frame_id = imu_frame_id
         imu.header.stamp = rospy.Time.from_sec(timestamp)            
         imu.linear_acceleration.x = float(data[4])
@@ -99,7 +102,7 @@ def save_camera_data(bag, whu_type, whu, bridge, camera, camera_frame_id, topic,
                     continue
 
                 line_list = line.split(',')
-                image_datetimes.append(float(line_list[0]))   
+                image_datetimes.append(float(line_list[0]) + 604800*2129 + UNIX_GPS_DIF - LEAPSEC)   
                 image_filenames.append(line_list[1])          
                 
     
@@ -133,7 +136,7 @@ def save_velo_data(bag, whu, velo_frame_id, topic):
             if line[0] == '#' or 'ime' in line:
                 continue       
             line_list = line.split(',')
-            velo_datetimes.append(float(line_list[0]))  
+            velo_datetimes.append(float(line_list[0]) + 604800*2129 + UNIX_GPS_DIF - LEAPSEC)  
             velo_filenames.append(line_list[1])          
 
     count = 0
@@ -181,7 +184,7 @@ def save_gps_fix_data(bag, whu, gps_frame_id, topic):
         data = data_line[0].split()                
         navsatfix_msg = NavSatFix()
         i_count = i_count+1
-        timestamp = float(data[0])
+        timestamp = float(data[0]) + 604800*2129 + UNIX_GPS_DIF - LEAPSEC
         navsatfix_msg.header.seq = i_count 
         navsatfix_msg.header.frame_id = gps_frame_id
         navsatfix_msg.header.stamp = rospy.Time.from_sec(timestamp)    
