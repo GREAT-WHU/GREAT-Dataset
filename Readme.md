@@ -430,7 +430,7 @@ We have plotted reference solution of each data set in Google Earth for easy com
 ## Development Toolkits
 &ensp;&ensp;&ensp;We have uploaded a script in the Tools folder for converting the raw observation data into bag format, which can be used as needed.   
 
-&ensp;&ensp;&ensp;This tool is intended to be used within a ROS environment.Before proceeding, it is essential to install the necessary dependencies. We recommend using Python 3.8. You can install the required dependencies through the requirements.txt file in the folder:
+&ensp;&ensp;&ensp;This tool is intended to be used within a ROS environment.Before proceeding, it is essential to install the necessary dependencies. We recommend using Python 3.7. You can install the required dependencies through the requirements.txt file in the folder:
 ~~~
     pip install -r requirements.txt
 ~~~
