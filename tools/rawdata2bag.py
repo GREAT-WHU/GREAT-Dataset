@@ -227,7 +227,8 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description = "Convert WHU dataset to ROS bag file the easy way!")
     # Accepted argument values
-    whu_types = ["raw_synced"]    
+    whu_types = ["raw_synced"]  
+    parser.add_argument("whu_type", choices = whu_types, help = "whu dataset type")  
     parser.add_argument("dir", nargs = "?", default = os.getcwd(), help = "base directory of the dataset, if no directory passed the deafult is current working directory")   
     parser.add_argument("-n", "--name", help = "raw data dir name")    
     args = parser.parse_args()
@@ -273,7 +274,7 @@ if __name__ == "__main__":
         save_gps_fix_data(bag, whu, gps_frame_id, gps_fix_topic)          
         save_imu_data_raw(bag, whu, imu_frame_id, imu_raw_topic)            
         for camera in cameras:
-            save_camera_data(bag, whu_types, whu, bridge, camera=camera[0], camera_frame_id=camera[1], topic=camera[2], initial_time=None)            
+            save_camera_data(bag, args.whu_type, whu, bridge, camera=camera[0], camera_frame_id=camera[1], topic=camera[2], initial_time=None)            
         save_velo_data(bag, whu, velo_frame_id, velo_topic)
             
     finally:

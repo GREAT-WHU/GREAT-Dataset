@@ -450,7 +450,7 @@ We have plotted reference solution of each data set in Google Earth for easy com
 
 &ensp;&ensp;&ensp;To use it, type:
 ~~~
-    python rawdata2bag.py /path/to/your/data -n data_name
+    python rawdata2bag.py raw_synced /path/to/your/data -n data_name
 ~~~
 
 
