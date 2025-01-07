@@ -273,7 +273,7 @@ if __name__ == "__main__":
         save_gps_fix_data(bag, whu, gps_frame_id, gps_fix_topic)          
         save_imu_data_raw(bag, whu, imu_frame_id, imu_raw_topic)            
         for camera in cameras:
-            save_camera_data(bag, args.whu_type, whu, bridge, camera=camera[0], camera_frame_id=camera[1], topic=camera[2], initial_time=None)            
+            save_camera_data(bag, whu_types, whu, bridge, camera=camera[0], camera_frame_id=camera[1], topic=camera[2], initial_time=None)            
         save_velo_data(bag, whu, velo_frame_id, velo_topic)
             
     finally:
