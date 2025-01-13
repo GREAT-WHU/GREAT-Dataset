@@ -89,7 +89,7 @@ The table below presents detailed information about the various sensors utilized
     <tr>
         <th align="center">Camera</th>
         <td align="center">FLIR BFS-PGE-31S4C </td>
-        <td align="center">20 Hz</td>
+        <td align="center">10-20 Hz</td>
         <td align="center">Imaging device:Sony IMX265<br>Sensor type:Progressive Scan CMOS<br>Shutter type:Global<br>Data transmission:PoE GigE<br>Maximum image resolution(H×V):2048×1536</td>
     </tr>
     <tr>
@@ -100,7 +100,7 @@ The table below presents detailed information about the various sensors utilized
     </tr>
 </table>
 
-&ensp;&ensp;&ensp;In 2022, only the GNSS receiver was replaced, with the model changing from Septentrio PolaRx5 to AsteRx4. The AsteRx4 is also a high-precision, multi-frequency, multi-system receiver that supports the same signals.
+&ensp;&ensp;&ensp;In 2022, only the GNSS receiver was replaced, with the model changing from Septentrio PolaRx5 to AsteRx4. The AsteRx4 is also a high-precision, multi-frequency, multi-system receiver that supports the same signals. At the same time, we modified the camera frequency, changing it from 20 Hz to 10Hz.
 
 ## Comparison with other datasets
 The table below summarizes the characteristics of the GREAT Dataset compared to various existing high-quality SLAM datasets:  
@@ -368,7 +368,7 @@ The table below provides a detailed description of the observational environment
         <td></td>
         <td>√</td>
         <td>√</td>
-        <td>1622.2</td>
+        <td>1399.2</td>
         <td>Hard</td>
     </tr>
 </table>
