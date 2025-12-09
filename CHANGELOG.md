@@ -9,3 +9,6 @@ Fix errors in rawdata2bag.py, update lidar data in sequence urban-02 and the Dev
 
 ### 2025.01.06
 Fix error of ROS time in rawdata2bag.py
+
+### 2025.12.09
+Add BaiduNetdisk links in readme.md
