@@ -39,7 +39,16 @@
 
 &ensp;&ensp;&ensp;If you face any problem when using this dataset, feel free to propose an issue. If you find the dataset useful for your research, we would appreciate it if you could give the project a star. For academic use of the GREAT Dataset, please cite:
 ~~~
-GREAT(GNSS+ REsearch, Application and Teaching) Group from SGG of Wuhan University, Nov. 2024, "GREAT Dataset:A vehicle-mounted multi-sensor raw observation dataset in complex urban environment.", [Online]. Available: https://github.com/GREAT-WHU/GREAT-Dataset.git
+@ARTICLE{11614877,
+  author={Li, Xingxing and Chen, Siqi and Xia, Chunxi and Wang, Xuanbin and Zhou, Yuxuan and Li, Shengyu},
+  journal={IEEE Transactions on Automation Science and Engineering}, 
+  title={GREAT Dataset: A Multi-Sensor Raw Observation Dataset for High-Precision Urban Navigation}, 
+  year={2026},
+  volume={23},
+  number={},
+  pages={13330-13342},
+  keywords={Image sensors;Global navigation satellite system;Algorithms;Laser radar;Sequences;Sequential analysis;Location awareness;Accuracy;Cameras;Simultaneous localization and mapping;Dataset;multi-sensor fusion;GNSS;navigation},
+  doi={10.1109/TASE.2026.3715325}}
 ~~~
 
 ## Sensor Setup
